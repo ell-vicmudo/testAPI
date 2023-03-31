@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\BulsuGoalsController;
 use App\Http\Controllers\Api\BulsuSubgoalsController;
 use App\Http\Controllers\Api\BoardOfRegentController;
 use App\Http\Controllers\Api\AdministrativeOfficesController;
+use App\Http\Controllers\Api\NewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,8 +34,6 @@ Route::group(['prefix' => 'v1'], function() {
     Route::group(['middleware' => ['auth:sanctum']], function() {
 
         //Routes for Auth user
-        Route::get('/me', [AuthController::class, 'me']);
-        Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
         Route::post('/logout', [AuthController::class, 'logout']);
         //Routes for bulsu Personnel api
         Route::apiResource('bulsuPersonnel', PersonnelController::class);
@@ -57,4 +56,6 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('/administrativeCouncil', [AdministrativeOfficesController::class, 'index']);
     Route::apiResource('executiveOfficial', ExecutiveController::class);
 
+    //
+    Route::apiResource('news', NewsController::class);
 });

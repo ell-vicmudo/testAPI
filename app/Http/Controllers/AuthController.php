@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\HttpResponses;
 use App\Http\Requests\StoreUserRequest;
 
+
 class AuthController extends Controller
 {
 
@@ -26,7 +27,8 @@ public function register(StoreUserRequest $request)
                    'password' => Hash::make($request->password),
        ]);
 
-$token = $user->createToken('auth_token')->plainTextToken;
+
+    $token = $user->createToken('auth_token')->plainTextToken;
 
 return $this->success([
         'user' => $user,
@@ -37,34 +39,32 @@ return $this->success([
 public function login(Request $request)
 {
 if (!Auth::attempt($request->only('email', 'password'))) {
-return response()->json([
-'message' => 'Invalid login details'
-           ], 401);
+return $this->error(
+'','Invalid login details'
+           , 401);
        }
 
 $user = User::where('email', $request['email'])->firstOrFail();
 
 $token = $user->createToken('auth_token')->plainTextToken;
 
-return response()->json([
+return $this->success([
            'access_token' => $token,
            'token_type' => 'Bearer',
 ]);
 }
 
 
-public function me(Request $request)
-{
-return $request->user();
-}
-
 public function logout()
 {
-    Auth::user()->currentAccessToken()->delete;
-
-    return $this->success([
-        'message' => 'You have successfully been logged out and your token has been deleted'
-    ]);
+    $user = Auth::user();
+    $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
+    
+    
+        return $this->success(
+            '', null, 204
+        );
+    
 }
 
 }
