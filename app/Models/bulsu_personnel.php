@@ -10,6 +10,17 @@ class bulsu_personnel extends Model
 {
     use HasFactory;
 
+    protected $fillable= [
+        'employee_number',
+        'name',
+        'position',
+        'contact_no',
+        'email',
+        'image',
+        'department_id',
+        'campus_id'
+    ];
+
     // protected $contactInfo = ['phone', 'local', 'email'];
 
     public function department()
@@ -30,4 +41,5 @@ class bulsu_personnel extends Model
     {
         return $this->hasOne('App\Models\Administrative_Offices');
     }
+
 }

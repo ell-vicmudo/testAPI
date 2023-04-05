@@ -17,6 +17,7 @@ class BoardOfRegentController extends Controller
         $boardOfRegents = Board_of_Regents::get();
 
         return response()->json([
+            'status' => 'Success',
             'data'=> $boardOfRegents
         ]);
     }

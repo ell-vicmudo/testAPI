@@ -28,9 +28,10 @@ public function register(StoreUserRequest $request)
        ]);
 
 
-    $token = $user->createToken('auth_token')->plainTextToken;
+    $token = $user->createToken('Access token for '.$user->name)->plainTextToken;
 
 return $this->success([
+        'status' => 'Success',
         'user' => $user,
         'token' => $token
 ]);
@@ -49,6 +50,7 @@ $user = User::where('email', $request['email'])->firstOrFail();
 $token = $user->createToken('auth_token')->plainTextToken;
 
 return $this->success([
+           'status' => 'Success',
            'access_token' => $token,
            'token_type' => 'Bearer',
 ]);

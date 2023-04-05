@@ -3,34 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\bulsu_subGoal;
-use App\Models\bulsu_goal;
+use App\Models\bulsu_college;
 use Illuminate\Http\Request;
 
-class BulsuSubgoalsController extends Controller
+class CollegeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-        $subgoal = bulsu_subGoal::get();
-
+        $college = bulsu_college::all();
         return response()->json([
             'status' => 'Success',
-            'data'=> $subgoal
-        ]);
-    }
-
-    public function showSubGoal($id)
-    {
-        $goal = bulsu_goal::find($id);
-
-        $subgoal = bulsu_subGoal::where('goal_id', $goal->id)->get();
-
-        return response()->json([
-            'data'=> $subgoal
+            'data' => $college
         ]);
     }
 
@@ -48,12 +34,27 @@ class BulsuSubgoalsController extends Controller
     public function store(Request $request)
     {
         //
+        $this->validate($request, [
+            'abbreviation' => 'required|string',
+            'name' => 'required|string',
+        ]);
+
+        $college = bulsu_college::create([
+            'college_abbv' => $request->abbreviation,
+            'college_name' => $request->name,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $college
+        ]);
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(bulsu_subGoal $bulsu_subGoal)
+    public function show(bulsu_college $bulsu_college)
     {
         //
     }
@@ -61,7 +62,7 @@ class BulsuSubgoalsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(bulsu_subGoal $bulsu_subGoal)
+    public function edit(bulsu_college $bulsu_college)
     {
         //
     }
@@ -69,7 +70,7 @@ class BulsuSubgoalsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, bulsu_subGoal $bulsu_subGoal)
+    public function update(Request $request, bulsu_college $bulsu_college)
     {
         //
     }
@@ -77,7 +78,7 @@ class BulsuSubgoalsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(bulsu_subGoal $bulsu_subGoal)
+    public function destroy(bulsu_college $bulsu_college)
     {
         //
     }

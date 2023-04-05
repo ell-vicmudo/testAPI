@@ -17,6 +17,7 @@ class BulsuAboutController extends Controller
         $about = bulsu_about::get();
 
         return response()->json([
+            'status' => 'Success',
             'data' => $about
         ]);
     }
@@ -40,9 +41,15 @@ class BulsuAboutController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(bulsu_about $bulsu_about)
+    public function show($id)
     {
         //
+        $about = bulsu_about::where('id', $id)->get();
+
+        return response()->json([
+            'status'=>'Success',
+            'data'=> $about,
+        ]);
     }
 
     /**

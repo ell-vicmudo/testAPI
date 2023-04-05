@@ -16,6 +16,7 @@ class BulsuGoalsController extends Controller
         $goals = bulsu_goal::get();
 
         return response()->json([
+            'status' => 'Success',
             'data'=> $goals
         ]);
     }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\bulsu_personnel;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
+use App\Models\Department;
+use App\Models\Campus;
 
 class PersonnelController extends Controller
 {
@@ -19,6 +21,7 @@ class PersonnelController extends Controller
         $personnel = bulsu_personnel::all();
 
         return response()->json([
+            'status' => 'Success',
             'data' => $personnel
         ]);
     }
@@ -28,16 +31,46 @@ class PersonnelController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $personnel = new bulsu_personnel;
+        // $personnel = new bulsu_personnel;
+        // $personnel->employee_number = $request->input('employeeNumber');
+        // $personnel->name = $request->input('name');
+        // $personnel->position = $request->input('position');     
+        // $personnel->save();
+        // return response('User created successfully.');
 
-        $personnel->employee_number = $request->input('employeeNumber');
-        $personnel->name = $request->input('name');
-        $personnel->position = $request->input('position');
+        $this->validate($request, [
+            'employee_number' => 'required|string',
+            'name' => 'required|string',
+            'position' => 'required|string',
+            'department_name' => 'string',
+            'campus' => 'string',
+            'contact_no' => 'string',
+            'email' => 'email',
+            'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048'
+        ]);
+
         
-        $personnel->save();
+        $image_path= $request->file('image')->store('bulsu_personnel', 'public');
+        $department = Department::where('office_name', $request->department_name)->first()->id;
+        $campus = Campus::where('campus_name', $request->campus)->first()->id;
 
-        return response('User created successfully.');
+        $personnel = bulsu_personnel::create([
+            'employee_number' => $request->employee_number,
+            'name' => $request->name,
+            'position' => $request->position,
+            'contact_no' => $request->contact_no,
+            'email' => $request->email,
+            'image' => $image_path,
+            'department_id' => $department,
+            'campus_id' => $campus,
+        ]);
+
+        return response()->json([
+            'status' => 'Success',
+            'data'=>$personnel
+        ]);
+
+
     }
 
     /**

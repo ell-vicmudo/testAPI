@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\bulsu_news;
+use App\Models\procurement;
 use Illuminate\Http\Request;
 
-class NewsController extends Controller
+class ProcurementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $news = bulsu_news::orderBy('publish_date','DESC')->get();
+        $procurement = procurement::all();
 
         return response()->json([
-            'data' => $news
+            'status' => 'Success',
+            'data' => $procurement
         ]);
     }
 
@@ -33,37 +34,36 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-
+        //
         $this->validate($request, [
+            'date' => 'required|date',
+            'publisher' => 'required|string',
             'title'=> 'required|string',
-            'publisher'=> 'required|string',
-            'publish_date'=> 'required|date',
-            'heading'=> 'required|string',
-            'body'=> 'required|string',
-            'thumbnail'=>'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-        ]);
-        $image_path= $request->file('thumbnail')->store('News_image', 'public');
+            'body' => 'required|string',
+            'document' => 'required|mimes:pdf,csv,xls,xlsx,doc,docx|max:10000',
 
-        $news = bulsu_news::create([
-            'title' => $request->title,
-            'publisher'=> $request->publisher,
-            'publish_date'=> $request->publish_date,
-            'heading'=> $request->heading,
-            'body'=> $request->body,
-            'thumbnail' => $image_path,
         ]);
-        
+
+        $procurement_doc_path= $request->file('document')->store('procurement', 'public');
+
+        $procurement = procurement::create([
+            'date' => $request->date,
+            'publisher' => $request->publisher,
+            'title' => $request->title,
+            'body' => $request->body,
+            'document' => $procurement_doc_path,
+        ]);
 
         return response()->json([
             'status' => 'Success',
-            'data'=>$news
+            'data' => $procurement
         ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(bulsu_news $bulsu_news)
+    public function show(procurement $procurement)
     {
         //
     }
@@ -71,7 +71,7 @@ class NewsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(bulsu_news $bulsu_news)
+    public function edit(procurement $procurement)
     {
         //
     }
@@ -79,7 +79,7 @@ class NewsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, bulsu_news $bulsu_news)
+    public function update(Request $request, procurement $procurement)
     {
         //
     }
@@ -87,7 +87,7 @@ class NewsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(bulsu_news $bulsu_news)
+    public function destroy(procurement $procurement)
     {
         //
     }

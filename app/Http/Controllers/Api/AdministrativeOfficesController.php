@@ -25,6 +25,7 @@ class AdministrativeOfficesController extends Controller
         ->get();
 
         return response()->json([
+            'status' => 'Success',
             'data' => $adminCouncil
         ]);
     }

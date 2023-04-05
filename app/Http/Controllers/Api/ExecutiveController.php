@@ -22,6 +22,7 @@ class ExecutiveController extends Controller
         ->get();
 
         return response()->json([
+            'status' => 'Success',
             'data' => $executive
         ]);
     }

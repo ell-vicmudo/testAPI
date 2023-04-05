@@ -18,8 +18,7 @@ return new class extends Migration
             $table->text('position');
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('campus_id')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('local')->nullable();
+            $table->string('contact_no')->nullable();
             $table->string('email')->nullable();
             $table->string('image')->nullable();
             $table->boolean('isActive')->default(true);
