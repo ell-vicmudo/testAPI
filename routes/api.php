@@ -44,8 +44,8 @@ Route::group(['prefix' => 'v1'], function() {
         Route::apiResource('executiveOfficial', ExecutiveController::class)->only('index', 'store');
 
         //academics
-        Route::apiResource('news', NewsController::class)->only('index', 'store');
-        Route::apiResource('procurement', ProcurementController::class)->only('index', 'store');
+        Route::apiResource('news', NewsController::class)->only('index',);
+        Route::apiResource('procurement', ProcurementController::class)->only('index');
         Route::apiResource('college', CollegeController::class)->only('index');
         Route::apiResource('course', CourseController::class)->only('index');
 
@@ -57,10 +57,12 @@ Route::group(['prefix' => 'v1'], function() {
         //Routes for Auth user
         Route::post('/logout', [AuthController::class, 'logout']);
         //Routes for bulsu Personnel api
-        Route::apiResource('bulsuPersonnel', PersonnelController::class)->only('index','store');
-        
+        Route::apiResource('bulsuPersonnel', PersonnelController::class)->only('index','store', 'update');
+        //Routes for bulsu Academic
         Route::post('/college', [CollegeController::class, 'store']);
         Route::post('/course', [CourseController::class, 'store']);
+        Route::post('/procurement', [ProcurementController::class, 'store']);
+        Route::post('/news', [NewsController::class,  'store']);
     });
 
     // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

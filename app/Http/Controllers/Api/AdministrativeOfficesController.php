@@ -17,7 +17,7 @@ class AdministrativeOfficesController extends Controller
         //
         $adminCouncil = DB::table('bulsu_personnels')
         ->selectRaw(
-            'bulsu_personnels.name as name, bulsu_personnels.position, departments.office_name, administrative__offices.admin_offices'
+            'bulsu_personnels.name as name, bulsu_personnels.position as position, departments.office_name as department, administrative__offices.admin_offices as adminCategory'
         )
         ->join('departments', 'bulsu_personnels.department_id', '=', 'departments.id')
         ->join('administrative__offices', 'bulsu_personnels.id', '=', 'administrative__offices.bulsu_personnel_id')

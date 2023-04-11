@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('campus_id')->nullable();
             $table->string('contact_no')->nullable();
             $table->string('email')->nullable();
-            $table->string('image')->nullable();
+            $table->string('image')->default(null)->nullable();
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

@@ -18,7 +18,8 @@ class bulsu_personnel extends Model
         'email',
         'image',
         'department_id',
-        'campus_id'
+        'campus_id',
+        'isActive'
     ];
 
     // protected $contactInfo = ['phone', 'local', 'email'];
