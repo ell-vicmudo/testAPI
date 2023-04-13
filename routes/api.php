@@ -57,7 +57,7 @@ Route::group(['prefix' => 'v1'], function() {
         //Routes for Auth user
         Route::post('/logout', [AuthController::class, 'logout']);
         //Routes for bulsu Personnel api
-        Route::apiResource('bulsuPersonnel', PersonnelController::class)->only('index','store', 'update');
+        Route::apiResource('bulsuPersonnel', PersonnelController::class)->only('index','store','show','update','destroy');
         //Routes for bulsu Academic
         Route::post('/college', [CollegeController::class, 'store']);
         Route::post('/course', [CourseController::class, 'store']);

@@ -17,8 +17,8 @@ class BulsuAboutController extends Controller
         $about = bulsu_about::get();
 
         return response()->json([
-            'status' => 'Success',
-            'data' => $about
+            'status' => 200,
+            'abouts' => $about
         ]);
     }
 

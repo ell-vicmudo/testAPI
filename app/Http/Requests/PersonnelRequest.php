@@ -22,9 +22,9 @@ class PersonnelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_number' => 'sometimes|required|string',
-            'name' => 'sometimes|required|string',
-            'position' => 'sometimes|required|string',
+            'employee_number' => 'required|string',
+            'name' => 'required|string',
+            'position' => 'required|string',
             'department_name' => 'string',
             'campus' => 'string',
             'contact_no' => 'string',
