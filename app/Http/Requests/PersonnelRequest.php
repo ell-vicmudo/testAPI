@@ -22,14 +22,14 @@ class PersonnelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'employee_number' => 'required|string',
-            'name' => 'required|string',
-            'position' => 'required|string',
-            'department_name' => 'string',
-            'campus' => 'string',
-            'contact_no' => 'string',
-            'email' => 'email|regex:/(.*)@bulsu\.edu\.ph/i',
-            'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'employee_number' => 'sometimes|required|string',
+            'name' => 'sometimes|required|string',
+            'position' => 'sometimes|required|string',
+            'department' => 'nullable|string',
+            'campus' => 'nullable|string',
+            'contact_no' => 'sometimes|string',
+            'email' => 'sometimes|email|regex:/(.*)@bulsu\.edu\.ph/i',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'isActive' => 'boolean'
         ];
         

@@ -9,7 +9,9 @@ use App\Traits\HttpResponses;
 use App\Models\Department;
 use App\Models\Campus;
 use App\Http\Requests\PersonnelRequest;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+
 
 class PersonnelController extends Controller
 {
@@ -54,14 +56,27 @@ class PersonnelController extends Controller
 
         
         if($request->hasFile('image')){
-            $personnelImage = time() . '.' . $request->image->extension();
-            $image_path= $request->image->storeAs('personnelImage', $personnelImage, 'public');
+            // $personnelImage = time() . '.' . $request->image->extension();
+            // $image_path= $request->image->storeAs('personnelImage', $personnelImage, 'public');
+            // $image_name = time().'.'.$request->image->extension();
+            $image_name = uniqid().'-'.$request->name.'.'.$request->image->extension();
+            $image_path = $request->image->storeAs('personnelImage', $image_name);
+
         } else {
             $image_path= null;
         };
         
-        $department = Department::where('office_name', $request->department_name)->first()->id;
+        if($request->department != null){
+            $department = Department::where('office_name', $request->department)->first()->id;
+        }else {
+            $department= null;
+        };
+        
+        if($request->campus != null){
         $campus = Campus::where('campus_name', $request->campus)->first()->id;
+        }else {
+            $campus= null;
+        };
 
         $personnel = bulsu_personnel::create([
             'employee_number' => $request->employee_number,
@@ -100,90 +115,64 @@ class PersonnelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $bulsuPersonnel)
+    public function update(PersonnelRequest $request, $bulsuPersonnel)
     {
-        $validator = Validator::make($request->all(), [
-            'employee_number' => 'string',
-            'name' => 'string',
-            'position' => 'string',
-            'contact_no' => 'string',
-            'email' => 'email',
-            'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-            'isActive' => 'boolean'
+
+        $personnel = bulsu_personnel::find($bulsuPersonnel);
+
+        if(!$personnel){
+            return $this->error('','Id not found',404);
+        }else{
+            
+        $request->validated($request->all());
+
+        
+        if($request->hasFile('image')){
+            // $image_path = uniqid() . '.' . $request->image->extension();
+            // $request->image->move(storage_path('app/personnelImage'), $image_path);
+            // if ($personnel->image) {
+            //     Storage::delete('app/personnelImage'.$personnel->image);
+            //     }
+            $image          = $request->file('image');
+            $image_path   = uniqid().'-'.$request->name.'.'.$request->image->extension();
+            $location       = storage_path('/app/personnelImage');
+            $OldImage       = storage_path('app/'.$personnel->image); #new
+            $image->move($location, $image_path);
+            unlink($OldImage);
+
+        } else {
+          $image_path=$personnel->image;
+        }
+        
+        if($request->department != null){
+            $department = Department::where('office_name', $request->department)->first()->id;
+        }else {
+            $department= null;
+        };
+        
+        if($request->campus != null){
+        $campus = Campus::where('campus_name', $request->campus)->first()->id;
+        }else {
+            $campus= null;
+        };
+
+        $personnel->update([
+            'employee_number' => $request->employee_number,
+            'name' => $request->name,
+            'position' => $request->position,
+            'contact_no' => $request->contact_no,
+            'email' => $request->email,
+            'image' => $image_path,
+            'department_id' => $department,
+            'campus_id' => $campus,
+        ]);
+        
+
+        return $this->success([
+            $personnel
         ]);
 
-        if($validator->fails()){
-            return $this->error('', 'Error Input', 422);
-        } else {
-
-            $personnel = bulsu_personnel::find($bulsuPersonnel);
-
-            //
-            if($personnel) {
-
-                //
-                //$personnelImage='';
-                if($request->hasFile('image')){
-                    $personnelImage = time() . '.' . $request->image->extension();
-                    $image_path= $request->image->storeAs('personnelImage', $personnelImage, 'public');
-                        if ($personnel->image) {
-                        Storage::delete('public/personnelImage'.$personnel->image);
-                        }
-                } else {
-                    $personnelImage = $personnel->image;
-                };
-    
-                $personnel->update([
-                    'employee_number' => $request->employee_number,
-                    'name' => $request->name,
-                    'position'=> $request->position,
-                    'contact_no' => $request->contact_no,
-                    'email' => $request->email,
-                    'isActive' => $request->isActive,
-                    'image' => $personnelImage
-                ]);
-
-                return $this->success('','Successfully Updated');
-
-            }else{
-                return $this->error('', 'Failed to update', 500);
-            }
-            
         }
-
-        // if(!$bulsuPersonnel) {
-        //     return $this->error(null, 'Id not found', 404);
-        // }
-        
-        // $request->validate([
-        //     'employee_number' => 'string',
-        //     'name' => 'string',
-        //     'position' => 'string',
-        //     'contact_no' => 'string',
-        //     'email' => 'email',
-        //     'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-        //     'isActive' => 'boolean'
-        // ]);
-
-        // $personnel = $request->all();
-
-        // $personnelImage = '';
-        // if ($request->hasFile('image')) {
-        //     $personnelImage = time() . '.' . $request->image->extension();
-        //     $request->image->storeAs('public/images/bulsu_personnel', $personnelImage);
-        //     if ($bulsuPersonnel->image) {
-        //         Storage::delete('public/images/bulsu_personnel'.$bulsuPersonnel->image);
-        //     }
-        // } else {
-        //     $personnelImage = $bulsuPersonnel->image;
-        // }
-
-        
-
-        // $bulsuPersonnel->update($personnel);
-        // $bulsuPersonnel->getChanges();
-
-        // return $this->success($bulsuPersonnel);
         
     }
 
