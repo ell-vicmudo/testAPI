@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Administrative_Offices;
+use App\Models\bulsu_personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -44,6 +45,22 @@ class AdministrativeOfficesController extends Controller
     public function store(Request $request)
     {
         //
+        $this->validate($request, [
+            "name" => 'required|string',
+            "administrative_Offices" => 'required|string',
+        ]);
+
+        $personnel = bulsu_personnel::where('name', $request->name)->first()->id;
+
+        $adminCouncil = Administrative_Offices::create([
+            "bulsu_personnel_id" => $personnel,
+            "admin_offices" => $request->administrative_Offices,
+        ]);
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => $adminCouncil
+        ]);
     }
 
     /**

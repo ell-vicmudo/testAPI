@@ -9,9 +9,6 @@ use App\Traits\HttpResponses;
 use App\Models\Department;
 use App\Models\Campus;
 use App\Http\Requests\PersonnelRequest;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-
 
 class PersonnelController extends Controller
 {
@@ -183,6 +180,6 @@ class PersonnelController extends Controller
     {
         $bulsuPersonnel->delete();
 
-        return $this->success(null,null,204);
+        return response()->noContent();
     }
 }

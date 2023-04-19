@@ -12,4 +12,6 @@ class Administrative_Offices extends Model
     public function bulsu_personnel(){
         return $this->belongsTo('App\Models\bulsu_personnel');
     }
+
+    protected $fillable = [ "bulsu_personnel_id", "admin_offices" ];
 }

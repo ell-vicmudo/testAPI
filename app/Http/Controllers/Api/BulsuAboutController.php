@@ -28,6 +28,7 @@ class BulsuAboutController extends Controller
     public function create()
     {
         //
+        
     }
 
     /**
@@ -36,15 +37,29 @@ class BulsuAboutController extends Controller
     public function store(Request $request)
     {
         //
+        $this->validate($request, [
+            'title' => 'required|string',
+            'content' => 'required|string'
+        ]);
+
+        $about = bulsu_about::create([
+            'title' => $request->title,
+            'content' => $request->content
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $about
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($bulsu_about)
     {
         //
-        $about = bulsu_about::where('id', $id)->get();
+        $about = bulsu_about::where('id', $bulsu_about)->get();
 
         return response()->json([
             'status'=>'Success',
@@ -63,16 +78,46 @@ class BulsuAboutController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, bulsu_about $bulsu_about)
+    public function update(Request $request, $bulsuAbout)
     {
         //
+        $about = bulsu_about::find($bulsuAbout);
+
+        $this->validate($request, [
+            'title' => 'required|string',
+            'content' => 'required|string'
+        ]);
+
+        $about->update([
+            'title' => $request->title,
+            'content' => $request->content
+        ]);
+
+        return response()->json([
+            'status'=>'Success',
+            'data'=> $about,
+        ]);;
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(bulsu_about $bulsu_about)
+    public function destroy(bulsu_about $bulsuAbout)
     {
         //
+        $bulsuAbout->delete();
+
+        return  response()->noContent();
     }
+
+    public function __construct()
+{
+    $this->middleware('auth:sanctum')
+        ->only([
+            'destroy',
+            'store',
+            'update',
+        ]);
+}
 }

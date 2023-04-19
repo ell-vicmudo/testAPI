@@ -35,12 +35,16 @@ Route::group(['prefix' => 'v1'], function() {
 
 
         //Routes for bulsu_about
-        Route::get('/bulsuAbout', [BulsuAboutController::class, 'index']);
-        Route::get('/bulsuAbout/{id}', [BulsuAboutController::class, 'show']);
+        Route::apiResource('bulsuAbout', BulsuAboutController::class)->only('index', 'store', 'show', 'update', 'destroy');
+
         Route::get('/bulsuGoals',[BulsuGoalsController::class, 'index']);
         Route::get('/bulsuGoal/subGoals/{id}', [BulsuSubgoalsController::class, 'showSubGoal']);
         Route::get('/boardOfRegents', [BoardOfRegentController::class, 'index']);
+
+        
         Route::get('/administrativeCouncil', [AdministrativeOfficesController::class, 'index']);
+        Route::post('/administrativeCouncil', [AdministrativeOfficesController::class, 'store']);
+
         Route::apiResource('executiveOfficial', ExecutiveController::class)->only('index', 'store');
 
         //academics
