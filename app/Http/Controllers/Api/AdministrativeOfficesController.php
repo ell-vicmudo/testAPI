@@ -66,9 +66,32 @@ class AdministrativeOfficesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Administrative_Offices $administrative_Offices)
+    public function show($administrativeCouncil)
     {
         //
+        $adminCouncil = DB::table('bulsu_personnels')
+        ->selectRaw(
+            'bulsu_personnels.name as name, bulsu_personnels.position as position, departments.office_name as department, administrative__offices.admin_offices as adminCategory'
+        )
+        ->join('departments', 'bulsu_personnels.department_id', '=', 'departments.id')
+        ->join('administrative__offices', 'bulsu_personnels.id', '=', 'administrative__offices.bulsu_personnel_id')
+        ->where('administrative__offices.id', '=', $administrativeCouncil)
+        ->get();
+        
+        //Administrative_Offices::where('id', $administrativeCouncil)->get();
+
+        if(is_null($adminCouncil)) {
+            return response()->json([
+                'status'=> 'Error',
+                'message' => 'ID not found'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => $adminCouncil
+        ]);
+
     }
 
     /**
@@ -82,9 +105,38 @@ class AdministrativeOfficesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Administrative_Offices $administrative_Offices)
+    public function update(Request $request, $administrativeCouncil)
     {
         //
+
+        // $this->validate($request, [
+        //     'name' => 'required|string',
+        //     'adminCategory' => 'required|string',
+        // ]);
+
+        // $personnel = bulsu_personnel::where('name', $request->name)->first()->id;
+
+        // $adminCouncil = Administrative_Officer::find($administrativeCouncil);
+
+        // if(is_null($adminCouncil)) {
+        //     return response()->json([
+        //         'status'=> 'Error',
+        //         'message' => 'ID not found'
+        //     ]);
+        // } else {
+        //     $adminCouncil->update([
+        //         'bulsu_personnel_id' => $personnel,
+        //         'admin_offices' => $request->adminCategory
+        //     ]);
+
+        //     return response()->json([
+        //         'status' => 'Success',
+        //         'data' => $adminCouncil
+        //     ]);
+        // }
+
+
+        
     }
 
     /**

@@ -42,9 +42,7 @@ Route::group(['prefix' => 'v1'], function() {
         Route::get('/boardOfRegents', [BoardOfRegentController::class, 'index']);
 
         
-        Route::get('/administrativeCouncil', [AdministrativeOfficesController::class, 'index']);
-        Route::post('/administrativeCouncil', [AdministrativeOfficesController::class, 'store']);
-
+        Route::apiResource('administrativeCouncil', AdministrativeOfficesController::class)->only('index', 'store', 'show');
         Route::apiResource('executiveOfficial', ExecutiveController::class)->only('index', 'store');
 
         //academics
