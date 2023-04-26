@@ -69,4 +69,12 @@ public function logout()
     
 }
 
+public function __construct()
+{
+    $this->middleware('auth:sanctum')
+        ->only([
+            'logout'
+        ]);
+}
+
 }

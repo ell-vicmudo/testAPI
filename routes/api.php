@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\ProcurementController;
 use App\Http\Controllers\Api\CollegeController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\BulsuAnnouncementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,18 +33,20 @@ Route::group(['prefix' => 'v1'], function() {
         //Routes for Auth user
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/logout', [AuthController::class, 'logout']);
 
+        //Routes for bulsu Personnel api
+        Route::apiResource('bulsuPersonnel', PersonnelController::class);
 
         //Routes for bulsu_about
         Route::apiResource('bulsuAbout', BulsuAboutController::class)->only('index', 'store', 'show', 'update', 'destroy');
-
         Route::get('/bulsuGoals',[BulsuGoalsController::class, 'index']);
         Route::get('/bulsuGoal/subGoals/{id}', [BulsuSubgoalsController::class, 'showSubGoal']);
         Route::get('/boardOfRegents', [BoardOfRegentController::class, 'index']);
-
-        
         Route::apiResource('administrativeCouncil', AdministrativeOfficesController::class)->only('index', 'store', 'show');
         Route::apiResource('executiveOfficial', ExecutiveController::class)->only('index', 'store');
+
+        Route::apiResource('announcement', BulsuAnnouncementController::class)->only('index', 'store', 'update');
 
         //academics
         Route::apiResource('news', NewsController::class)->only('index',);
@@ -51,21 +54,12 @@ Route::group(['prefix' => 'v1'], function() {
         Route::apiResource('college', CollegeController::class)->only('index');
         Route::apiResource('course', CourseController::class)->only('index');
 
-
-
-    //Protected Routes
-    Route::group(['middleware' => ['auth:sanctum']], function() {
-
-        //Routes for Auth user
-        Route::post('/logout', [AuthController::class, 'logout']);
-        //Routes for bulsu Personnel api
-        Route::apiResource('bulsuPersonnel', PersonnelController::class)->only('index','store','show','update','destroy');
         //Routes for bulsu Academic
         Route::post('/college', [CollegeController::class, 'store']);
         Route::post('/course', [CourseController::class, 'store']);
         Route::post('/procurement', [ProcurementController::class, 'store']);
         Route::post('/news', [NewsController::class,  'store']);
-    });
+    
 
     // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     //     return $request->user();

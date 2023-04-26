@@ -9,6 +9,7 @@ use App\Traits\HttpResponses;
 use App\Models\Department;
 use App\Models\Campus;
 use App\Http\Requests\PersonnelRequest;
+use Illuminate\Support\Facades\File;
 
 class PersonnelController extends Controller
 {
@@ -19,21 +20,23 @@ class PersonnelController extends Controller
     public function index()
     {
         //
-        $personnel = bulsu_personnel::select([
-             'bulsu_personnels.employee_number',
-             'bulsu_personnels.name',
-             'bulsu_personnels.position',
-             'departments.office_name',
-             'campuses.campus_name',
-             'bulsu_personnels.id'
-            ])->join('departments', 'departments.id', '=', 'bulsu_personnels.department_id')
-            ->join('campuses', 'campuses.id', '=', 'bulsu_personnels.campus_id')
-            ->get();;
+        // $personnel = bulsu_personnel::select([
+        //      'bulsu_personnels.employee_number',
+        //      'bulsu_personnels.name',
+        //      'bulsu_personnels.position',
+        //      'departments.office_name',
+        //      'campuses.campus_name',
+        //      'bulsu_personnels.id'
+        //     ])->join('departments', 'departments.id', '=', 'bulsu_personnels.department_id')
+        //     ->join('campuses', 'campuses.id', '=', 'bulsu_personnels.campus_id')
+        //     ->get();
+
+        $personnel = bulsu_personnel::all();
 
         if($personnel->count() > 0){
-            return $this->success([
+            return $this->success(
                 $personnel
-            ]);
+            );
         }else{
             return $this->error('', 'No Data to Retrieve!', 404);
         };
@@ -114,7 +117,7 @@ class PersonnelController extends Controller
      */
     public function update(PersonnelRequest $request, $bulsuPersonnel)
     {
-
+        //Retrieve specific info
         $personnel = bulsu_personnel::find($bulsuPersonnel);
 
         if(!$personnel){
@@ -123,30 +126,31 @@ class PersonnelController extends Controller
             
         $request->validated($request->all());
 
-        
-        if($request->hasFile('image')){
-            // $image_path = uniqid() . '.' . $request->image->extension();
-            // $request->image->move(storage_path('app/personnelImage'), $image_path);
-            // if ($personnel->image) {
-            //     Storage::delete('app/personnelImage'.$personnel->image);
-            //     }
-            $image          = $request->file('image');
-            $image_path   = uniqid().'-'.$request->name.'.'.$request->image->extension();
-            $location       = storage_path('/app/personnelImage');
-            $OldImage       = storage_path('app/'.$personnel->image); #new
-            $image->move($location, $image_path);
-            unlink($OldImage);
 
+        // For image Update
+        if($request->hasFile('image')){
+
+            $image          = $request->file('image');
+            $image_name   = uniqid().'-'.$request->name.'.'.$request->image->extension();
+            $location       = storage_path('/app/personnelImage');
+            $image->move($location, $image_name);
+
+            //$OldImage = storage_path('app/'.$personnel->image);
+           
+            $image_path = 'personnelImage/'.$image_name;
+            File::delete(storage_path('app/'). $personnel->image);
         } else {
           $image_path=$personnel->image;
         }
-        
+    
+        //department
         if($request->department != null){
             $department = Department::where('office_name', $request->department)->first()->id;
         }else {
             $department= null;
         };
         
+        //campus
         if($request->campus != null){
         $campus = Campus::where('campus_name', $request->campus)->first()->id;
         }else {
@@ -182,4 +186,17 @@ class PersonnelController extends Controller
 
         return response()->noContent();
     }
+
+    public function __construct()
+{
+    $this->middleware('auth:sanctum')
+        ->only([
+            'index',
+            'store',
+            'show',
+            'update',
+            'destroy'
+        ]);
+}
+    
 }
