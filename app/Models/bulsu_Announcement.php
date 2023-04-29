@@ -14,7 +14,7 @@ class bulsu_Announcement extends Model
         'publisher',
         'date',
         'body',
-        'announcement_image',
-        'announcement_attachment'
+        'image',
+        'attachment'
     ];
 }

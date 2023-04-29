@@ -13,4 +13,10 @@ class Campus extends Model
     {
        return $this->hasMany('App\Models\bulsu_personnel');
     }
+
+    protected $fillable = [
+        'campus_name',
+        'campus_overview',
+        'campus_contact_number'
+    ];
 }

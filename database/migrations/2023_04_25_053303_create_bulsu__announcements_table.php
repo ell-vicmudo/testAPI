@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('publisher');
             $table->date('date');
             $table->mediumText('body')->nullable();
-            $table->text('announcement_image')->nullable();
-            $table->text('announcement_attachment')->nullable();
+            $table->string('image', 255)->unique()->nullable();
+            $table->string('attachment', 255)->unique()->nullable();
             $table->timestamps();
         });
     }

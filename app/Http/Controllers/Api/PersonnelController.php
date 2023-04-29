@@ -19,18 +19,6 @@ class PersonnelController extends Controller
      */
     public function index()
     {
-        //
-        // $personnel = bulsu_personnel::select([
-        //      'bulsu_personnels.employee_number',
-        //      'bulsu_personnels.name',
-        //      'bulsu_personnels.position',
-        //      'departments.office_name',
-        //      'campuses.campus_name',
-        //      'bulsu_personnels.id'
-        //     ])->join('departments', 'departments.id', '=', 'bulsu_personnels.department_id')
-        //     ->join('campuses', 'campuses.id', '=', 'bulsu_personnels.campus_id')
-        //     ->get();
-
         $personnel = bulsu_personnel::all();
 
         if($personnel->count() > 0){
@@ -40,10 +28,6 @@ class PersonnelController extends Controller
         }else{
             return $this->error('', 'No Data to Retrieve!', 404);
         };
-        
-            
-        
-
     }
 
     /**
@@ -54,73 +38,56 @@ class PersonnelController extends Controller
         
         $request->validated($request->all());
 
-        
+        //Bulsu Personnel to save Images
         if($request->hasFile('image')){
-            // $personnelImage = time() . '.' . $request->image->extension();
-            // $image_path= $request->image->storeAs('personnelImage', $personnelImage, 'public');
-            // $image_name = time().'.'.$request->image->extension();
-            $image_name = uniqid().'-'.$request->name.'.'.$request->image->extension();
+            $image_name = $request->image->getClientOriginalName();
             $image_path = $request->image->storeAs('personnelImage', $image_name);
 
         } else {
             $image_path= null;
         };
-        
+        //Retrieve Department ID
         if($request->department != null){
             $department = Department::where('office_name', $request->department)->first()->id;
         }else {
             $department= null;
         };
-        
+        //Retrieve Campus ID
         if($request->campus != null){
         $campus = Campus::where('campus_name', $request->campus)->first()->id;
         }else {
             $campus= null;
         };
-
+        //Create Command
         $personnel = bulsu_personnel::create([
             'employee_number' => $request->employee_number,
-            'name' => $request->name,
-            'position' => $request->position,
-            'contact_no' => $request->contact_no,
-            'email' => $request->email,
-            'image' => $image_path,
-            'department_id' => $department,
-            'campus_id' => $campus,
+            'name'            => $request->name,
+            'position'        => $request->position,
+            'contact_no'      => $request->contact_no,
+            'email'           => $request->email,
+            'image'           => $image_path,
+            'department_id'   => $department,
+            'campus_id'       => $campus,
         ]);
-        
-
-        return $this->success([
-            $personnel
-        ]);
-
+        return $this->success($message = $personnel->name.' added successfully.');
 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($bulsuPersonnel)
+    public function show(bulsu_personnel $bulsuPersonnel)
     {
-        //
-        $personnel = bulsu_personnel::find($bulsuPersonnel);
-
-        if(!$personnel){
-            return $this->error('','Id not found',404);
-        }else{
-            return $this->success($personnel);
-        }
+            return $bulsuPersonnel;     
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(PersonnelRequest $request, $bulsuPersonnel)
+    public function update(PersonnelRequest $request, bulsu_personnel $bulsuPersonnel)
     {
-        //Retrieve specific info
-        $personnel = bulsu_personnel::find($bulsuPersonnel);
 
-        if(!$personnel){
+        if(!$bulsuPersonnel){
             return $this->error('','Id not found',404);
         }else{
             
@@ -130,34 +97,35 @@ class PersonnelController extends Controller
         // For image Update
         if($request->hasFile('image')){
 
-            $image          = $request->file('image');
-            $image_name   = uniqid().'-'.$request->name.'.'.$request->image->extension();
-            $location       = storage_path('/app/personnelImage');
-            $image->move($location, $image_name);
+            if($request->image != null){
+                File::delete(storage_path('app/personnelImage/'). $bulsuPersonnel->image);
+            }
 
-            //$OldImage = storage_path('app/'.$personnel->image);
-           
-            $image_path = 'personnelImage/'.$image_name;
-            File::delete(storage_path('app/'). $personnel->image);
+            $image          = $request->file('image');
+            $image_name     = $request->image->getClientOriginalName();
+            $location       = storage_path('/app/personnelImage');
+            $image->move($location, $image_name);       
+            $image_path     = $image_name;
+            
         } else {
-          $image_path=$personnel->image;
+          $image_path=$bulsuPersonnel->image;
         }
     
         //department
         if($request->department != null){
             $department = Department::where('office_name', $request->department)->first()->id;
         }else {
-            $department= null;
+            $department= $bulsuPersonnel->department_id;
         };
         
         //campus
         if($request->campus != null){
         $campus = Campus::where('campus_name', $request->campus)->first()->id;
         }else {
-            $campus= null;
+            $campus= $bulsuPersonnel->campus_id;
         };
 
-        $personnel->update([
+        $bulsuPersonnel->update([
             'employee_number' => $request->employee_number,
             'name' => $request->name,
             'position' => $request->position,
@@ -170,7 +138,7 @@ class PersonnelController extends Controller
         
 
         return $this->success([
-            $personnel
+            $bulsuPersonnel
         ]);
 
         }

@@ -13,4 +13,10 @@ class Department extends Model
     {
        return $this->hasMany('App\Models\bulsu_personnel');
     }
+
+    protected $fillable = [
+        'office_code',
+        'office_name',
+        'contact_number'
+    ];
 }

@@ -23,14 +23,6 @@ class BulsuAnnouncementController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -45,17 +37,21 @@ class BulsuAnnouncementController extends Controller
         ]);
 
         if($request->hasFile('image')){
-            $image_name = Carbon::now()->format('YmdHs').'.'.$request->image->extension();
-            $image_path = $request->image->storeAs('announcement/image', $image_name);
+            $image_type = $request->image->getClientOriginalName();
+            $image_path = $request->image->storeAs('announcement/image', $image_type);
+
+            $image_name = $image_type;
         } else {
-            $image_path = null;
+            $image_name = null;
         }
 
         if($request->hasFile('attachment')){
-            $doc_name = time().'-'.$request->attachment->getClientOriginalName();
-            $doc_path =$request->file('attachment')->storeAs('announcement/attachment', $doc_name);
+            $doc_type = $request->attachment->getClientOriginalName();
+            $doc_path =$request->file('attachment')->storeAs('announcement/attachment', $doc_type);
+
+            $doc_name = $doc_type;
         } else {
-            $doc_path = null;
+            $doc_name = null;
         }
 
         $announcement = bulsu_Announcement::create([
@@ -63,8 +59,8 @@ class BulsuAnnouncementController extends Controller
             'publisher' => $request->publisher,
             'body' => $request->body,
             'date' => $request->date,
-            'announcement_image' => $image_path,
-            'announcement_attachment' => $doc_path
+            'image' => $image_name,
+            'attachment' => $doc_name
         ]);
 
         return response()->json([
@@ -77,14 +73,6 @@ class BulsuAnnouncementController extends Controller
      * Display the specified resource.
      */
     public function show(bulsu_Announcement $bulsu_Announcement)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(bulsu_Announcement $bulsu_Announcement)
     {
         //
     }
@@ -106,27 +94,38 @@ class BulsuAnnouncementController extends Controller
         $announcement = bulsu_Announcement::find($bulsu_Announcement);
 
         if($request->hasFile('image')){
+            if($announcement->image !=null){
+                File::delete(storage_path('app/announcement/image/').$announcement->image);
+            }
+            
             $image = $request->file('image');
-            $image_name = Carbon::now()->format('YmdHs').'.'.$image->extension();
+            //$image_name = Carbon::now()->format('YmdHs').'.'.$image->extension();
+            $image_name = $image->getClientOriginalName();
             $location = storage_path('app/announcement/image');
             $image->move($location, $image_name);
 
-            $image_path = 'announcement/image/'.$image_name;
-            File::delete(storage_path('app/').$announcement->announcement_image);
+            $image_path = $image_name;
+            
         } else {
-            $image_path = $announcement->announcement_image;
+            $image_path = $announcement->image;
         }
 
         if($request->hasFile('attachment')){
+            if($announcement->attachment != null){
+                File::delete(storage_path('app/announcement/attachment/').$announcement->attachment);
+            }
+
             $attach_doc = $request->file('attachment');
-            $doc_name = time().'-'.$attach_doc->getClientOriginalName();
+            //$doc_name = time().'-'.$attach_doc->getClientOriginalName();
+            $doc_name = $attach_doc->getClientOriginalName();
             $location = storage_path('app/announcement/attachment');
             $attach_doc->move($location, $doc_name);
 
-            $doc_path = 'announcement/image/'.$doc_name;
-            File::delete(storage_path('app/').$announcement->announcement_attachment);
+            $doc_path = $doc_name;
+          
+            
         } else {
-            $doc_path = $announcement->announcement_attachment;
+            $doc_path = $announcement->attachment;
         }
 
         $announcement->update([
@@ -134,8 +133,8 @@ class BulsuAnnouncementController extends Controller
             'publisher' => $request->publisher,
             'date' => $request->date,
             'body'=>$request->body,
-            'announcement_image'=>$image_path,
-            'announcement_attachment'=>$doc_path
+            'image'=>$image_path,
+            'attachment'=>$doc_path
         ]);
 
         return response()->json([
@@ -152,4 +151,15 @@ class BulsuAnnouncementController extends Controller
     {
         //
     }
+
+    public function __construct()
+{
+    $this->middleware('auth:sanctum')
+        ->only([
+            'store',
+            'show',
+            'update',
+            'destroy'
+        ]);
+}
 }

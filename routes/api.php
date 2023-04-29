@@ -15,7 +15,8 @@ use App\Http\Controllers\Api\ProcurementController;
 use App\Http\Controllers\Api\CollegeController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\BulsuAnnouncementController;
-
+use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\CampusController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -53,6 +54,8 @@ Route::group(['prefix' => 'v1'], function() {
         Route::apiResource('procurement', ProcurementController::class)->only('index');
         Route::apiResource('college', CollegeController::class)->only('index');
         Route::apiResource('course', CourseController::class)->only('index');
+        Route::apiResource('department', DepartmentController::class)->only('index', 'store', 'update', 'destroy');
+        Route::apiResource('campus', CampusController::class)->only('index', 'store', 'show', 'update', 'destroy');
 
         //Routes for bulsu Academic
         Route::post('/college', [CollegeController::class, 'store']);
