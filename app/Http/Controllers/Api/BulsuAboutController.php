@@ -14,7 +14,7 @@ class BulsuAboutController extends Controller
     public function index()
     {
         //
-        $about = bulsu_about::get();
+        $about = bulsu_about::all()->makeHidden(['created_at', 'updated_at']);
 
         return response()->json([
             'status' => 200,
